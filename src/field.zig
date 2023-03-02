@@ -21,3 +21,9 @@ test "repl" {
     var expected = "FieldElement_1(2)";
     try testing.expectEqualStrings(expected, try e.repl(buf));
 }
+
+test "eql" {
+    try testing.expect((FieldElement{ .prime = 1, .num = 2 }).eql(&FieldElement{ .prime = 1, .num = 2 }));
+    try testing.expect(!(FieldElement{ .prime = 1, .num = 2 }).eql(&FieldElement{ .prime = 2, .num = 2 }));
+    try testing.expect(!(FieldElement{ .prime = 1, .num = 2 }).eql(&FieldElement{ .prime = 1, .num = 1 }));
+}
