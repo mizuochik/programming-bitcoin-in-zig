@@ -18,8 +18,7 @@ test "repl" {
     const e = FieldElement{ .prime = 1, .num = 2 };
     var buf = try testing.allocator.alloc(u8, 1024);
     defer testing.allocator.free(buf);
-    var expected = "FieldElement_1(2)";
-    try testing.expectEqualStrings(expected, try e.repl(buf));
+    try testing.expectEqualStrings("FieldElement_1(2)", try e.repl(buf));
 }
 
 test "eql" {
