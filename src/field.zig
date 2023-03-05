@@ -51,12 +51,7 @@ pub const FieldElement = struct {
 
     pub fn div(self: *const FieldElement, other: *const FieldElement) FieldElement {
         std.debug.assert(self.prime == other.prime);
-        var b = self.num;
-        for (0..self.prime - 2) |_| {
-            b *= other.num;
-            b %= self.prime;
-        }
-        return FieldElement{ .prime = self.prime, .num = b };
+        return self.mul(&other.exp(self.prime - 2));
     }
 };
 
