@@ -36,15 +36,15 @@ test "repl" {
 }
 
 test "eql" {
-    try testing.expect((FieldElement{ .prime = 1, .num = 2 }).eql(&FieldElement{ .prime = 1, .num = 2 }));
-    try testing.expect(!(FieldElement{ .prime = 1, .num = 2 }).eql(&FieldElement{ .prime = 2, .num = 2 }));
-    try testing.expect(!(FieldElement{ .prime = 1, .num = 2 }).eql(&FieldElement{ .prime = 1, .num = 1 }));
+    try testing.expect((FieldElement{ .prime = 7, .num = 2 }).eql(&FieldElement{ .prime = 7, .num = 2 }));
+    try testing.expect(!(FieldElement{ .prime = 7, .num = 2 }).eql(&FieldElement{ .prime = 8, .num = 2 }));
+    try testing.expect(!(FieldElement{ .prime = 7, .num = 2 }).eql(&FieldElement{ .prime = 7, .num = 1 }));
 }
 
 test "add" {
-    const lhs = FieldElement{ .prime = 2, .num = 3 };
-    const rhs = FieldElement{ .prime = 2, .num = 4 };
-    const expected = FieldElement{ .prime = 2, .num = 1 };
+    const lhs = FieldElement{ .prime = 7, .num = 2 };
+    const rhs = FieldElement{ .prime = 7, .num = 6 };
+    const expected = FieldElement{ .prime = 7, .num = 1 };
     const actual = try lhs.add(&rhs);
     try testing.expect(actual.eql(&expected));
 }
