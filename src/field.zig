@@ -5,8 +5,8 @@ const FieldElement = struct {
     num: u32,
     prime: u32,
 
-    fn repl(self: *const FieldElement, buf: []u8) std.fmt.BufPrintError![]u8 {
-        return try std.fmt.bufPrint(buf, "FieldElement_{d}({d})", .{ self.prime, self.num });
+    pub fn format(self: *const FieldElement, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+        try writer.print("FieldElement_{d}({d})", .{ self.prime, self.num });
     }
 
     fn eql(self: *const FieldElement, other: *const FieldElement) bool {
@@ -30,11 +30,10 @@ const FieldElement = struct {
     }
 };
 
-test "repl" {
-    const e = FieldElement{ .prime = 1, .num = 2 };
-    var buf = try testing.allocator.alloc(u8, 1024);
-    defer testing.allocator.free(buf);
-    try testing.expectEqualStrings("FieldElement_1(2)", try e.repl(buf));
+test "format" {
+    const actual = try std.fmt.allocPrint(testing.allocator, "{}", .{FieldElement{ .prime = 7, .num = 3 }});
+    defer testing.allocator.free(actual);
+    try testing.expectEqualStrings("FieldElement_7(3)", actual);
 }
 
 test "eql" {
