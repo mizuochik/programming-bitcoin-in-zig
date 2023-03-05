@@ -28,6 +28,14 @@ pub const FieldElement = struct {
             .prime = self.prime,
         };
     }
+
+    pub fn mul(self: *const FieldElement, other: *const FieldElement) FieldElement {
+        std.debug.assert(self.prime == other.prime);
+        return FieldElement{
+            .num = self.num * other.num % self.prime,
+            .prime = self.prime,
+        };
+    }
 };
 
 test "format" {
@@ -52,4 +60,10 @@ test "sub" {
     const lhs = FieldElement{ .prime = 7, .num = 3 };
     const rhs = FieldElement{ .prime = 7, .num = 4 };
     try testing.expect(lhs.sub(&rhs).eql(&FieldElement{ .prime = 7, .num = 6 }));
+}
+
+test "mul" {
+    const lhs = FieldElement{ .prime = 7, .num = 3 };
+    const rhs = FieldElement{ .prime = 7, .num = 4 };
+    try testing.expect(lhs.mul(&rhs).eql(&FieldElement{ .prime = 7, .num = 5 }));
 }
