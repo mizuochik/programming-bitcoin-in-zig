@@ -1,7 +1,7 @@
 const std = @import("std");
 const testing = std.testing;
 
-const FieldElement = struct {
+pub const FieldElement = struct {
     num: u32,
     prime: u32,
 
@@ -9,11 +9,11 @@ const FieldElement = struct {
         try writer.print("FieldElement_{d}({d})", .{ self.prime, self.num });
     }
 
-    fn eql(self: *const FieldElement, other: *const FieldElement) bool {
+    pub fn eql(self: *const FieldElement, other: *const FieldElement) bool {
         return self.num == other.num and self.prime == other.prime;
     }
 
-    fn add(self: *const FieldElement, other: *const FieldElement) FieldElement {
+    pub fn add(self: *const FieldElement, other: *const FieldElement) FieldElement {
         std.debug.assert(self.prime == other.prime);
         return FieldElement{
             .num = (self.num + other.num) % self.prime,
@@ -21,7 +21,7 @@ const FieldElement = struct {
         };
     }
 
-    fn sub(self: *const FieldElement, other: *const FieldElement) FieldElement {
+    pub fn sub(self: *const FieldElement, other: *const FieldElement) FieldElement {
         std.debug.assert(self.prime == other.prime);
         return FieldElement{
             .num = (self.num + self.prime - other.num) % self.prime,
