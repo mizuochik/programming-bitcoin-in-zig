@@ -1,10 +1,6 @@
 const std = @import("std");
 const testing = std.testing;
 
-const Error = error{
-    InvalidPrime,
-};
-
 const FieldElement = struct {
     num: u32,
     prime: u32,
@@ -17,20 +13,16 @@ const FieldElement = struct {
         return self.num == other.num and self.prime == other.prime;
     }
 
-    fn add(self: *const FieldElement, other: *const FieldElement) anyerror!FieldElement {
-        if (self.prime != other.prime) {
-            return Error.InvalidPrime;
-        }
+    fn add(self: *const FieldElement, other: *const FieldElement) FieldElement {
+        std.debug.assert(self.prime == other.prime);
         return FieldElement{
             .num = (self.num + other.num) % self.prime,
             .prime = self.prime,
         };
     }
 
-    fn sub(self: *const FieldElement, other: *const FieldElement) anyerror!FieldElement {
-        if (self.prime != other.prime) {
-            return Error.InvalidPrime;
-        }
+    fn sub(self: *const FieldElement, other: *const FieldElement) FieldElement {
+        std.debug.assert(self.prime == other.prime);
         return FieldElement{
             .num = (self.num + self.prime - other.num) % self.prime,
             .prime = self.prime,
@@ -54,15 +46,11 @@ test "eql" {
 test "add" {
     const lhs = FieldElement{ .prime = 7, .num = 2 };
     const rhs = FieldElement{ .prime = 7, .num = 6 };
-    const expected = FieldElement{ .prime = 7, .num = 1 };
-    const actual = try lhs.add(&rhs);
-    try testing.expect(actual.eql(&expected));
+    try testing.expect(lhs.add(&rhs).eql(&FieldElement{ .prime = 7, .num = 1 }));
 }
 
 test "sub" {
     const lhs = FieldElement{ .prime = 7, .num = 3 };
     const rhs = FieldElement{ .prime = 7, .num = 4 };
-    const actual = try lhs.sub(&rhs);
-    const expected = FieldElement{ .prime = 7, .num = 6 };
-    try testing.expect(actual.eql(&expected));
+    try testing.expect(lhs.sub(&rhs).eql(&FieldElement{ .prime = 7, .num = 6 }));
 }
