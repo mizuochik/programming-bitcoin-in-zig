@@ -1,9 +1,13 @@
 const std = @import("std");
 const testing = std.testing;
 
+const Error = error{
+    InvalidPrime,
+};
+
 const FieldElement = struct {
-    num: f16,
-    prime: i16,
+    num: u32,
+    prime: u32,
 
     fn repl(self: *const FieldElement, buf: []u8) std.fmt.BufPrintError![]u8 {
         return try std.fmt.bufPrint(buf, "FieldElement_{d}({d})", .{ self.prime, self.num });
@@ -11,6 +15,16 @@ const FieldElement = struct {
 
     fn eql(self: *const FieldElement, other: *const FieldElement) bool {
         return self.num == other.num and self.prime == other.prime;
+    }
+
+    fn add(self: *const FieldElement, other: *const FieldElement) anyerror!FieldElement {
+        if (self.prime != other.prime) {
+            return Error.InvalidPrime;
+        }
+        return FieldElement{
+            .num = (self.num + other.num) % self.prime,
+            .prime = self.prime,
+        };
     }
 };
 
@@ -25,4 +39,12 @@ test "eql" {
     try testing.expect((FieldElement{ .prime = 1, .num = 2 }).eql(&FieldElement{ .prime = 1, .num = 2 }));
     try testing.expect(!(FieldElement{ .prime = 1, .num = 2 }).eql(&FieldElement{ .prime = 2, .num = 2 }));
     try testing.expect(!(FieldElement{ .prime = 1, .num = 2 }).eql(&FieldElement{ .prime = 1, .num = 1 }));
+}
+
+test "add" {
+    const lhs = FieldElement{ .prime = 2, .num = 3 };
+    const rhs = FieldElement{ .prime = 2, .num = 4 };
+    const expected = FieldElement{ .prime = 2, .num = 1 };
+    const actual = try lhs.add(&rhs);
+    try testing.expect(actual.eql(&expected));
 }
