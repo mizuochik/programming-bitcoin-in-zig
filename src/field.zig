@@ -26,6 +26,16 @@ const FieldElement = struct {
             .prime = self.prime,
         };
     }
+
+    fn sub(self: *const FieldElement, other: *const FieldElement) anyerror!FieldElement {
+        if (self.prime != other.prime) {
+            return Error.InvalidPrime;
+        }
+        return FieldElement{
+            .num = (self.num + self.prime - other.num) % self.prime,
+            .prime = self.prime,
+        };
+    }
 };
 
 test "repl" {
@@ -46,5 +56,13 @@ test "add" {
     const rhs = FieldElement{ .prime = 7, .num = 6 };
     const expected = FieldElement{ .prime = 7, .num = 1 };
     const actual = try lhs.add(&rhs);
+    try testing.expect(actual.eql(&expected));
+}
+
+test "sub" {
+    const lhs = FieldElement{ .prime = 7, .num = 3 };
+    const rhs = FieldElement{ .prime = 7, .num = 4 };
+    const actual = try lhs.sub(&rhs);
+    const expected = FieldElement{ .prime = 7, .num = 6 };
     try testing.expect(actual.eql(&expected));
 }
