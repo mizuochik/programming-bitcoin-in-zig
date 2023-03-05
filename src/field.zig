@@ -37,9 +37,11 @@ pub const FieldElement = struct {
         };
     }
 
-    pub fn exp(self: *const FieldElement, exponential: u32) FieldElement {
+    pub fn pow(self: *const FieldElement, exponent: i32) FieldElement {
         var a: u32 = 1;
-        for (0..exponential) |_| {
+        const exp = @mod(exponent, @intCast(i32, self.prime - 1));
+        var cnt: i32 = 0;
+        while (cnt < exp) : (cnt += 1) {
             a *= self.num;
             a %= self.prime;
         }
@@ -51,7 +53,7 @@ pub const FieldElement = struct {
 
     pub fn div(self: *const FieldElement, other: *const FieldElement) FieldElement {
         std.debug.assert(self.prime == other.prime);
-        return self.mul(&other.exp(self.prime - 2));
+        return self.mul(&other.pow(@intCast(i32, self.prime - 2)));
     }
 };
 
@@ -85,9 +87,15 @@ test "mul" {
     try testing.expect(lhs.mul(&rhs).eql(&FieldElement{ .prime = 7, .num = 5 }));
 }
 
-test "exp" {
-    const base = FieldElement{ .prime = 13, .num = 3 };
-    try testing.expect(base.exp(3).eql(&FieldElement{ .prime = 13, .num = 1 }));
+test "pow" {
+    {
+        const base = FieldElement{ .prime = 13, .num = 3 };
+        try testing.expect(base.pow(3).eql(&FieldElement{ .prime = 13, .num = 1 }));
+    }
+    {
+        const base = FieldElement{ .prime = 31, .num = 17 };
+        try testing.expect(base.pow(-3).eql(&FieldElement{ .prime = 31, .num = 29 }));
+    }
 }
 
 test "div" {
