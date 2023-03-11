@@ -87,24 +87,14 @@ test "neq" {
 
 test "add" {
     {
-        const lhs = Point{ .x = null, .y = null, .a = 1, .b = 1 };
-        const rhs = Point{ .x = 1, .y = 1, .a = 1, .b = 1 };
-        try testing.expectEqual(Point{
-            .x = 1,
-            .y = 1,
-            .a = 1,
-            .b = 1,
-        }, lhs.add(&rhs));
+        const lhs = try Point.new(null, null, 1, 2);
+        const rhs = try Point.new(1, 2, 1, 2);
+        try testing.expectEqual(try Point.new(1, 2, 1, 2), lhs.add(&rhs));
     }
     {
-        const lhs = Point{ .x = 1, .y = 1, .a = 1, .b = 1 };
-        const rhs = Point{ .x = null, .y = null, .a = 1, .b = 1 };
-        try testing.expectEqual(Point{
-            .x = 1,
-            .y = 1,
-            .a = 1,
-            .b = 1,
-        }, lhs.add(&rhs));
+        const lhs = try Point.new(1, 2, 1, 2);
+        const rhs = try Point.new(null, null, 1, 2);
+        try testing.expectEqual(try Point.new(1, 2, 1, 2), lhs.add(&rhs));
     }
     {
         const lhs = try Point.new(1, -2, 1, 2);
