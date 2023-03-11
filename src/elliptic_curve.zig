@@ -33,6 +33,17 @@ pub const Point = struct {
     pub fn neq(self: *const Point, other: *const Point) bool {
         return !self.eql(other);
     }
+
+    pub fn add(self: *const Point, other: *const Point) Point {
+        std.debug.assert(self.a == other.a and self.b == other.b);
+        if (self.x == null)
+            return other.*;
+        if (other.x == null)
+            return self.*;
+        if (self.x == other.x)
+            return Point.new(null, null, self.a, self.b) catch unreachable;
+        unreachable;
+    }
 };
 
 test "new" {
@@ -71,5 +82,33 @@ test "neq" {
     try testing.expect(!lhs.neq(lhs));
     for (rhss) |rhs| {
         try testing.expect(lhs.neq(rhs));
+    }
+}
+
+test "add" {
+    {
+        const lhs = Point{ .x = null, .y = null, .a = 1, .b = 1 };
+        const rhs = Point{ .x = 1, .y = 1, .a = 1, .b = 1 };
+        try testing.expectEqual(Point{
+            .x = 1,
+            .y = 1,
+            .a = 1,
+            .b = 1,
+        }, lhs.add(&rhs));
+    }
+    {
+        const lhs = Point{ .x = 1, .y = 1, .a = 1, .b = 1 };
+        const rhs = Point{ .x = null, .y = null, .a = 1, .b = 1 };
+        try testing.expectEqual(Point{
+            .x = 1,
+            .y = 1,
+            .a = 1,
+            .b = 1,
+        }, lhs.add(&rhs));
+    }
+    {
+        const lhs = try Point.new(1, -2, 1, 2);
+        const rhs = try Point.new(1, 2, 1, 2);
+        try testing.expectEqual(Point.new(null, null, 1, 2), lhs.add(&rhs));
     }
 }
