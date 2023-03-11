@@ -7,21 +7,23 @@ const Error = error{
 };
 
 pub const Point = struct {
-    x: i32,
-    y: i32,
+    x: ?i32,
+    y: ?i32,
     a: i32,
     b: i32,
 
-    pub fn new(x: i32, y: i32, a: i32, b: i32) !Point {
-        if (math.pow(i32, y, 2) != math.pow(i32, x, 3) + a * x + b) {
-            return Error.NotOnCurve;
-        }
-        return Point{
+    pub fn new(x: ?i32, y: ?i32, a: i32, b: i32) !Point {
+        const p = Point{
             .x = x,
             .y = y,
             .a = a,
             .b = b,
         };
+        if (x == null and y == null)
+            return p;
+        if (math.pow(i32, y.?, 2) != math.pow(i32, x.?, 3) + a * x.? + b)
+            return Error.NotOnCurve;
+        return p;
     }
 
     pub fn eql(self: *const Point, other: *const Point) bool {
