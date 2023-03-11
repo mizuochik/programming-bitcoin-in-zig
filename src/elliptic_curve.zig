@@ -43,8 +43,12 @@ pub const Point = struct {
             return self.*;
         if (self.x == other.x and self.y != other.y)
             return Point.new(null, null, self.a, self.b) catch unreachable;
-        
-
+        if (self.x != other.x) {
+            const s = @divExact(other.y.? - self.y.?, other.x.? - self.x.?);
+            const x = math.pow(i32, s, 2) - self.x.? - other.x.?;
+            const y = s * (self.x.? - x) - self.y.?;
+            return Point.new(x, y, self.a, self.b) catch unreachable;
+        }
         unreachable;
     }
 };
