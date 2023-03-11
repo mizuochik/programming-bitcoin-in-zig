@@ -41,8 +41,10 @@ pub const Point = struct {
             return other.*;
         if (other.x == null)
             return self.*;
-        if (self.x == other.x)
+        if (self.x == other.x and self.y != other.y)
             return Point.new(null, null, self.a, self.b) catch unreachable;
+        
+
         unreachable;
     }
 };
