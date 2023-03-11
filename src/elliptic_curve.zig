@@ -27,7 +27,8 @@ pub const Point = struct {
     }
 
     pub fn eql(self: *const Point, other: *const Point) bool {
-        return self.x == other.x and self.y == other.y and self.a == other.a and self.b == other.b;
+        std.debug.assert(self.a == other.a and self.b == other.b);
+        return self.x == other.x and self.y == other.y;
     }
 
     pub fn neq(self: *const Point, other: *const Point) bool {
@@ -54,34 +55,6 @@ test "new" {
     {
         const actual = Point.new(-1, -2, 5, 7);
         try testing.expectError(Error.NotOnCurve, actual);
-    }
-}
-
-test "eql" {
-    const lhs = &Point{ .x = 1, .y = 1, .a = 1, .b = 1 };
-    const rhss = [_]*const Point{
-        &Point{ .x = 1, .y = 1, .a = 1, .b = 2 },
-        &Point{ .x = 1, .y = 1, .a = 2, .b = 1 },
-        &Point{ .x = 1, .y = 2, .a = 2, .b = 1 },
-        &Point{ .x = 2, .y = 1, .a = 2, .b = 1 },
-    };
-    try testing.expect(lhs.eql(lhs));
-    for (rhss) |rhs| {
-        try testing.expect(!lhs.eql(rhs));
-    }
-}
-
-test "neq" {
-    const lhs = &Point{ .x = 1, .y = 1, .a = 1, .b = 1 };
-    const rhss = [_]*const Point{
-        &Point{ .x = 1, .y = 1, .a = 1, .b = 2 },
-        &Point{ .x = 1, .y = 1, .a = 2, .b = 1 },
-        &Point{ .x = 1, .y = 2, .a = 2, .b = 1 },
-        &Point{ .x = 2, .y = 1, .a = 2, .b = 1 },
-    };
-    try testing.expect(!lhs.neq(lhs));
-    for (rhss) |rhs| {
-        try testing.expect(lhs.neq(rhs));
     }
 }
 
