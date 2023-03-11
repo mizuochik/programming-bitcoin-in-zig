@@ -26,6 +26,12 @@ pub const Point = struct {
 };
 
 test "new" {
-    const valid = try Point.new(-1, -1, 5, 7);
-    try testing.expectEqual(Point{ .x = -1, .y = -1, .a = 5, .b = 7 }, valid);
+    {
+        const actual = try Point.new(-1, -1, 5, 7);
+        try testing.expectEqual(Point{ .x = -1, .y = -1, .a = 5, .b = 7 }, actual);
+    }
+    {
+        const actual = Point.new(-1, -2, 5, 7);
+        try testing.expectError(Error.NotOnCurve, actual);
+    }
 }
