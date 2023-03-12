@@ -43,9 +43,15 @@ pub const Point = struct {
             return self.*;
         if (self.x == other.x and self.y != other.y)
             return Point.new(null, null, self.a, self.b) catch unreachable;
-        if (self.x != other.x) {
+        if (self.x != other.x and self.y != other.y) {
             const s = @divExact(other.y.? - self.y.?, other.x.? - self.x.?);
             const x = math.pow(i32, s, 2) - self.x.? - other.x.?;
+            const y = s * (self.x.? - x) - self.y.?;
+            return Point.new(x, y, self.a, self.b) catch unreachable;
+        }
+        if (self.x == other.x and self.y == other.y) {
+            const s = @divExact(3 * math.pow(i32, other.x.?, 2) + self.a, 2 * self.y.?);
+            const x = math.pow(i32, s, 2) - 2 * self.x.?;
             const y = s * (self.x.? - x) - self.y.?;
             return Point.new(x, y, self.a, self.b) catch unreachable;
         }
@@ -79,5 +85,10 @@ test "add" {
         const lhs = try Point.new(1, -2, 1, 2);
         const rhs = try Point.new(1, 2, 1, 2);
         try testing.expectEqual(Point.new(null, null, 1, 2), lhs.add(&rhs));
+    }
+    {
+        const lhs = try Point.new(-1, -1, 5, 7);
+        const rhs = try Point.new(-1, -1, 5, 7);
+        try testing.expectEqual(Point.new(18, 77, 5, 7), lhs.add(&rhs));
     }
 }
