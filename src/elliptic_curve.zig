@@ -7,12 +7,12 @@ const Error = error{
 };
 
 pub const Point = struct {
-    x: ?i32,
-    y: ?i32,
-    a: i32,
-    b: i32,
+    x: ?f32,
+    y: ?f32,
+    a: u32,
+    b: u32,
 
-    pub fn new(x: ?i32, y: ?i32, a: i32, b: i32) !Point {
+    pub fn new(x: ?f32, y: ?f32, a: u32, b: u32) !Point {
         const p = Point{
             .x = x,
             .y = y,
@@ -21,7 +21,7 @@ pub const Point = struct {
         };
         if (x == null and y == null)
             return p;
-        if (math.pow(i32, y.?, 2) != math.pow(i32, x.?, 3) + a * x.? + b)
+        if (math.pow(f32, y.?, 2) != math.pow(f32, x.?, 3) + @intToFloat(f32, a) * x.? + @intToFloat(f32, b))
             return Error.NotOnCurve;
         return p;
     }
@@ -44,14 +44,14 @@ pub const Point = struct {
         if (self.x == other.x and self.y != other.y)
             return Point.new(null, null, self.a, self.b) catch unreachable;
         if (self.x != other.x and self.y != other.y) {
-            const s = @divExact(other.y.? - self.y.?, other.x.? - self.x.?);
-            const x = math.pow(i32, s, 2) - self.x.? - other.x.?;
+            const s = (other.y.? - self.y.?) / (other.x.? - self.x.?);
+            const x = math.pow(f32, s, 2) - self.x.? - other.x.?;
             const y = s * (self.x.? - x) - self.y.?;
             return Point.new(x, y, self.a, self.b) catch unreachable;
         }
         if (self.x == other.x and self.y == other.y) {
-            const s = @divExact(3 * math.pow(i32, other.x.?, 2) + self.a, 2 * self.y.?);
-            const x = math.pow(i32, s, 2) - 2 * self.x.?;
+            const s = (3 * math.pow(f32, other.x.?, 2) + @intToFloat(f32, self.a)) / (2 * self.y.?);
+            const x = math.pow(f32, s, 2) - 2 * self.x.?;
             const y = s * (self.x.? - x) - self.y.?;
             return Point.new(x, y, self.a, self.b) catch unreachable;
         }
