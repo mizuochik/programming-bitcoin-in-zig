@@ -9,10 +9,10 @@ const Error = error{
 pub const Point = struct {
     x: ?f32,
     y: ?f32,
-    a: u32,
-    b: u32,
+    a: i32,
+    b: i32,
 
-    pub fn new(x: ?f32, y: ?f32, a: u32, b: u32) !Point {
+    pub fn new(x: ?f32, y: ?f32, a: i32, b: i32) !Point {
         const p = Point{
             .x = x,
             .y = y,
@@ -43,19 +43,18 @@ pub const Point = struct {
             return self.*;
         if (self.x == other.x and self.y != other.y)
             return Point.new(null, null, self.a, self.b) catch unreachable;
-        if (self.x != other.x and self.y != other.y) {
-            const s = (other.y.? - self.y.?) / (other.x.? - self.x.?);
-            const x = math.pow(f32, s, 2) - self.x.? - other.x.?;
-            const y = s * (self.x.? - x) - self.y.?;
-            return Point.new(x, y, self.a, self.b) catch unreachable;
-        }
+        if (self.x == other.x and self.y.? == 0 and other.y.? == 0)
+            return Point.new(null, null, self.a, self.b) catch unreachable;
         if (self.x == other.x and self.y == other.y) {
             const s = (3 * math.pow(f32, other.x.?, 2) + @intToFloat(f32, self.a)) / (2 * self.y.?);
             const x = math.pow(f32, s, 2) - 2 * self.x.?;
             const y = s * (self.x.? - x) - self.y.?;
             return Point.new(x, y, self.a, self.b) catch unreachable;
         }
-        unreachable;
+        const s = (other.y.? - self.y.?) / (other.x.? - self.x.?);
+        const x = math.pow(f32, s, 2) - self.x.? - other.x.?;
+        const y = s * (self.x.? - x) - self.y.?;
+        return Point.new(x, y, self.a, self.b) catch unreachable;
     }
 };
 
@@ -90,5 +89,10 @@ test "add" {
         const lhs = try Point.new(-1, -1, 5, 7);
         const rhs = try Point.new(-1, -1, 5, 7);
         try testing.expectEqual(Point.new(18, 77, 5, 7), lhs.add(&rhs));
+    }
+    {
+        const lhs = try Point.new(1, 0, 1, -2);
+        const rhs = try Point.new(1, 0, 1, -2);
+        try testing.expectEqual(Point.new(null, null, 1, -2), lhs.add(&rhs));
     }
 }
